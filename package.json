@@ -1,0 +1,28 @@
+{
+  "name": "healthcare_api",
+  "version": "1.0.0",
+  "description": "Simple Web API for hospital CRUD application ",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "keywords": [
+    "Web",
+    "Development",
+    "JavaScript",
+    "Health",
+    "Tech",
+    "HMIS"
+  ],
+  "author": "udochukwu abazie",
+  "license": "MIT ",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "cors": "^2.8.5",
+    "express": "^4.17.3",
+    "mongoose": "^6.2.10"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
