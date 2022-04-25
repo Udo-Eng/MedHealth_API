@@ -5,6 +5,7 @@ const  db = require('./db.js');
 exports.createAdmin = async (req, res) => {
     try {
         let AdminData = req.body;
+        console.log(AdminData);
 
         let newAdmin = await db.createAdmin(AdminData);
 
@@ -25,10 +26,9 @@ exports.logInAdmin = async (req, res) => {
     try {
         let LogInData = req.body;
 
-        let 
 
         return res.json({ sucess: true, admin: LogInData });
-        // }
+       
 
     } catch (err) {
         res.json({ sucess: false, message: 'Login was unsucessful please try again later ' });
@@ -86,18 +86,21 @@ exports.getPatient = async (req, res) => {
 //Controller to update  patient  data 
 exports.updatePatient = async (req,res) => {
 
+            try{
+                let updatedPatient = req.body;
 
-    let   updatedPatient  = req.body;
- 
-    let  patientId =  req.params.patientId;
+                let patientId = req.params.patientId;
 
 
-    let patient = await db.updatePatient(patientId,updatedPatient);
+                let patient = await db.updatePatient(patientId, updatedPatient);
 
-    if (patient) {
-    
-        res.json({ sucess: true, message: 'Patient was updated sucessfully ', patient: patient });
-    }
+                if (patient) {
+
+                    res.json({ sucess: true, message: 'Patient was updated sucessfully ', patient: patient });
+                }
+            }catch(err){
+                res.json({sucess: false, message:"The patient was not updated sucessfully"});
+            }
 
 }
 
@@ -105,13 +108,16 @@ exports.updatePatient = async (req,res) => {
 
 //Controller to delete  patient's data 
 exports.deletePatient = async (req,res) => {
-
+try{
     let patientId = req.params.patientId;
 
-    let responseObject  = await db.deletePatient(patientId);
+    let responseObject = await db.deletePatient(patientId);
 
     if (responseObject) {
         res.json(responseObject);
     }
-
+}catch(err){
+    res.json({sucess: false ,message: "The patient was not deleted sucessfully"})
+}
+ 
 }

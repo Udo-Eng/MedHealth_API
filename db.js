@@ -3,22 +3,29 @@ const mongoose = require('mongoose');
 const Admin = require('./Models/Admin.js');
 const Patient = require('./Models/Patient.js');
 const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 
 
-main().catch(err => console.log(err.message));
 
-async function main() {
-    await mongoose.connect('mongodb://localhost:27017/test');
-}
+
+// Function to connect to database 
+    main().catch(err => console.log(err.message));
+
+    async function main() {
+        // Connect to database 
+       let connection =  await mongoose.connect('mongodb://localhost:27017/MedHealth');
+    }
+
 
 
 exports.createAdmin = async (adminData) => {
+    let newAdmin;
 
     // use bcrypt to hash the password 
     let {firstName,lastName,email,password} = adminData;
 
-   let newAdmin  =  bcrypt.hash(password, async (hash) => {
+  await bcrypt.hash(password,saltRounds).then(async (hash) => {
         //  Create a new  admin 
          let securedAdmin = {
              firstName, lastName, email,hash
@@ -27,13 +34,19 @@ exports.createAdmin = async (adminData) => {
         let admin = new Admin(securedAdmin);
 
         // Save the Admin to the database 
-        let newAdmin = await admin.save();
+         newAdmin = await admin.save();
 
-        return newAdmin
 
+    }).catch((err) =>{
+        console.error(err.message);
     })
-    
-    return newAdmin;
+   
+
+    if(newAdmin){
+
+        console.log(newAdmin);
+         return newAdmin;
+    }
 
 }
 
@@ -43,25 +56,31 @@ exports.logInAdmin = async (LogInData) => {
 
     // use bcrypt to compare the password 
     let {  email, password } = LogInData;
+    let LogInAdmin;
 
+    // Retrieve the hash from the database
     let databaseAdmin = await Admin.find({email});
     let hash = '';
+
+    // Checking the value of Database Admin
+    console.log(databaseaAdmin,"Inside Login Admin ");
     if(databaseAdmin.length){
        hash = databaseAdmin[0].hash;
     }else{
-        return { sucess: false, message: 'Wrong email and password combination' }
+        return { sucess: false, message: 'Please enter the right email and password combination' }
     }
 
-    let Admin = bcrypt.compare(password,hash, async (result) =>{
+ bcrypt.compare(password,hash,async (result) =>{
         if(result){
-            let admin = await  Admin.find({email});
-            return {sucess: true  ,admin: admin};
-        }else{
-            return { sucess: false ,message: 'invalid password Please try again '};
+            LogInAdmin = await  Admin.find({email});
         }
     })
 
-    return 
+   if(LogInAdmin){
+       return { sucess: true, admin: LogInAdmin};
+   }else{
+       return { sucess: false, message: 'invalid password Please try again ' };
+   }
 
 }
 
@@ -117,8 +136,7 @@ exports.getPatient = async (id) => {
 }
 
 exports.updatePatient = async (id, patient) => {
-
-
+    
     let options = {
         new: true,                       // return updated doc
         runValidators: true              // validate before update
@@ -126,7 +144,6 @@ exports.updatePatient = async (id, patient) => {
 
     let updatedPatient = Patient.findOneAndUpdate({ _id: id }, patient, options)
         .then(patient => {
-            // Return the updated patient 
             return patient;
         })
         .catch(err => {

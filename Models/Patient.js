@@ -19,7 +19,7 @@ let PatientSchema = new mongoose.Schema({
     kinLastName: String,
     kinRelationship: String,
     kinPhoneNumber:Number,
-    kinResidentialAddress:Number,
+    kinResidentialAddress:String,
 })
 
 

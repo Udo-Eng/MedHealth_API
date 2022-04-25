@@ -6,8 +6,7 @@ const controllers = require('./controllers');
 // initializing  the express server application 
 const app = express();
 
-
-// Middleware to allow cross-origin resource sharing 
+// Middleware to allow cross-origin resource sharing by setting the same origin policy in browsers
 app.use(cors());
 
 
