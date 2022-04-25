@@ -43,8 +43,6 @@ exports.createAdmin = async (adminData) => {
    
 
     if(newAdmin){
-
-        console.log(newAdmin);
          return newAdmin;
     }
 
@@ -70,7 +68,8 @@ exports.logInAdmin = async (LogInData) => {
         return { sucess: false, message: 'Please enter the right email and password combination' }
     }
 
- bcrypt.compare(password,hash,async (result) =>{
+ bcrypt.compare(password,hash,async (result) => {
+     
         if(result){
             LogInAdmin = await  Admin.find({email});
         }
@@ -136,7 +135,7 @@ exports.getPatient = async (id) => {
 }
 
 exports.updatePatient = async (id, patient) => {
-    
+
     let options = {
         new: true,                       // return updated doc
         runValidators: true              // validate before update
@@ -159,10 +158,15 @@ exports.deletePatient = async (id) => {
 
     let patient = await Patient.findOneAndDelete({ _id: id });
 
+    let responseObject;
 
     if (patient) {
 
-        let responseObject = { sucess: true, message: 'patient data was deleted sucessfully' };
+        responseObject = { sucess: true, message: 'patient data was deleted sucessfully' };
+
+        return responseObject;
+    }else{
+        responseObject = { sucess: false, message: 'patient data was not deleted' };
 
         return responseObject;
     }

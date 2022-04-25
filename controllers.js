@@ -24,14 +24,16 @@ exports.createAdmin = async (req, res) => {
 // Controller to LogIn Admin  
 exports.logInAdmin = async (req, res) => {
     try {
+        
+        // Rename the  request body 
         let LogInData = req.body;
 
+        let result = await db.logInAdmin(LogInData);
 
-        return res.json({ sucess: true, admin: LogInData });
-       
+        return res.json(result);
 
     } catch (err) {
-        res.json({ sucess: false, message: 'Login was unsucessful please try again later ' });
+        res.json({ sucess: false, message: 'Login was unsucessful please try again later' });
     }
 
 }
