@@ -5,7 +5,6 @@ const  db = require('./db.js');
 exports.createAdmin = async (req, res) => {
     try {
         let AdminData = req.body;
-        console.log(AdminData);
 
         let newAdmin = await db.createAdmin(AdminData);
 
@@ -24,15 +23,17 @@ exports.createAdmin = async (req, res) => {
 // Controller to LogIn Admin  
 exports.logInAdmin = async (req, res) => {
     try {
-        
+
         // Rename the  request body 
         let LogInData = req.body;
 
         let result = await db.logInAdmin(LogInData);
 
+
         return res.json(result);
 
     } catch (err) {
+        
         res.json({ sucess: false, message: 'Login was unsucessful please try again later' });
     }
 
@@ -47,12 +48,11 @@ try{
     let newPatient =  await db.createPatient(patientData);
 
     if (newPatient) {
-       
          return res.json({ sucess: true, patient: newPatient });
     }
 
     }catch(err){
-        res.json({sucess : false ,message: 'Patient was not created'}) 
+        res.json({sucess : false , message: 'Patient was not created'}); 
     }
    
 }
@@ -93,11 +93,8 @@ exports.updatePatient = async (req,res) => {
 
                 let patientId = req.params.patientId;
 
-
-                let patient = await db.updatePatient(patientId, updatedPatient);
-
+                let patient = await db.updatePatient(patientId,updatedPatient);
                 if (patient) {
-
                     res.json({ sucess: true, message: 'Patient was updated sucessfully ', patient: patient });
                 }
             }catch(err){
@@ -108,18 +105,17 @@ exports.updatePatient = async (req,res) => {
 
 
 
-//Controller to delete  patient's data 
+//Controller to delete  patient  data 
 exports.deletePatient = async (req,res) => {
-try{
-    let patientId = req.params.patientId;
+        try{
+            let patientId = req.params.patientId;
 
-    let responseObject = await db.deletePatient(patientId);
+            let responseObject = await db.deletePatient(patientId);
 
-    if (responseObject) {
-        res.json(responseObject);
-    }
-}catch(err){
-    res.json({sucess: false ,message: "The patient was not deleted sucessfully"})
-}
- 
+            if (responseObject) {
+                res.json(responseObject);
+            }
+        }catch(err){
+            res.json({sucess: false ,message: "The patient was not deleted sucessfully"})
+        }
 }

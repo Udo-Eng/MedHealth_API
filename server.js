@@ -39,7 +39,7 @@ app.get("/patient/:patientId", controllers.getPatient);
 app.post("/patient/add", controllers.createPatient);
 
 // Route to  update Patient Data 
-app.put("/patient/update/:patientId", controllers.updatePatient);
+app.post("/patient/update/:patientId", controllers.updatePatient);
 
 
 // Route to  delete  Patient

@@ -4,19 +4,21 @@ const Admin = require('./Models/Admin.js');
 const Patient = require('./Models/Patient.js');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+const {connectionString} = require('./database.config.json')
 
 
-
-
+// Local connection string 
+// 'mongodb://localhost:27017/MedHealth'
 
 // Function to connect to database 
-    main().catch(err => console.log(err.message));
+    main().then(()=>{
+        console.log('Server connected to database sucessfully')
+    }).catch(err => console.log(err.message));
 
     async function main() {
-        // Connect to database 
-       let connection =  await mongoose.connect('mongodb://localhost:27017/MedHealth');
+    // Connect to database 
+     await mongoose.connect(connectionString);
     }
-
 
 
 exports.createAdmin = async (adminData) => {
@@ -52,41 +54,42 @@ exports.createAdmin = async (adminData) => {
 exports.logInAdmin = async (LogInData) => {
   
 
-    // use bcrypt to compare the password 
-    let {  email, password } = LogInData;
-    let LogInAdmin;
+                    // use bcrypt to compare the password 
+                    let {  email, password } = LogInData;
+                    
 
-    // Retrieve the hash from the database
-    let databaseAdmin = await Admin.find({email});
-    let hash = '';
+                    // Retrieve the hash from the database
+                    let databaseAdmin = await Admin.find({email});
+                    let hash = '';
 
-    // Checking the value of Database Admin
-    console.log(databaseaAdmin,"Inside Login Admin ");
-    if(databaseAdmin.length){
-       hash = databaseAdmin[0].hash;
-    }else{
-        return { sucess: false, message: 'Please enter the right email and password combination' }
-    }
+                const DatabaseAdminArray = Array.from(databaseAdmin);
+            
+                if (DatabaseAdminArray.length !== 0){
+                       hash = databaseAdmin[0].hash;
+                    }else{
+                        return { sucess: false, message: 'Please enter the right email and password combination'}
+                    }
 
- bcrypt.compare(password,hash,async (result) => {
-     
-        if(result){
-            LogInAdmin = await  Admin.find({email});
-        }
-    })
+                let LogInAdmin = await bcrypt.compare(password,hash).then(async (result) => {
+                                    let LogInAdmin;
+                                        if(result){
+                                          LogInAdmin = await Admin.find({email});
+                                        }
+                                        return LogInAdmin;
+                                    })
 
-   if(LogInAdmin){
-       return { sucess: true, admin: LogInAdmin};
-   }else{
-       return { sucess: false, message: 'invalid password Please try again ' };
-   }
+                 
+                
+                if(LogInAdmin){
+                    return { sucess: true, admin: LogInAdmin};
+                }else{
+                    return { sucess: false, message: 'invalid password Please try again ' };
+                }
 
-}
+      }
 
 
 exports.createPatient = async (patientData) => {
-    try {
-
 
         //  Create a new Patient 
         let newPatient = new Patient(patientData);
@@ -94,12 +97,7 @@ exports.createPatient = async (patientData) => {
         // Save the Patient to the database 
         let patient = await newPatient.save();
 
-
         return patient;
-
-    } catch (err) {
-        return { sucess: false, message: ' Error occured while adding patient ' };
-    }
 
 }
 
@@ -158,11 +156,15 @@ exports.deletePatient = async (id) => {
 
     let patient = await Patient.findOneAndDelete({ _id: id });
 
+    console.log(patient);
+
     let responseObject;
 
     if (patient) {
 
-        responseObject = { sucess: true, message: 'patient data was deleted sucessfully' };
+        let patients = await Patient.find();
+
+        responseObject = { sucess: true, message: 'patient data was deleted sucessfully', patients: patients };
 
         return responseObject;
     }else{
